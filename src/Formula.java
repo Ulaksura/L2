@@ -43,7 +43,7 @@ public class Formula extends JFrame {
     }
 
     public Formula() {
-        super("Вычисление формулы");
+        super("дюк123");
         setSize(WIDTH, HEIGHT);
         Toolkit kit = Toolkit.getDefaultToolkit();
         setLocation((kit.getScreenSize().width - WIDTH) / 2,// это чтобы экран был по центру, без этого оно будет в
@@ -88,16 +88,22 @@ public class Formula extends JFrame {
         JButton buttonCalc = new JButton("Вычислить");
         buttonCalc.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
-                Double x = Double.parseDouble(textFieldX.getText());
-                Double y = Double.parseDouble(textFieldY.getText());
-                Double z = Double.parseDouble(textFieldZ.getText());
-                Double result;
+                try {
+                    Double x = Double.parseDouble(textFieldX.getText());
+                    Double y = Double.parseDouble(textFieldY.getText());
+                    Double z = Double.parseDouble(textFieldZ.getText());
+                    Double result;
 
-                if (formulaId == 1)
-                    result = Form1(x, y, z);
-                else
-                    result = Form2(x, y, z);
-                labelForResult.setText(result.toString());
+                    if (formulaId == 1)
+                        result = Form1(x, y, z);
+                    else
+                        result = Form2(x, y, z);
+                    labelForResult.setText(result.toString());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(Formula.this,
+                            "Ошибка в формате записи числа с плавающей точкой", "Ошибочный формат числа",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
 
             ;
