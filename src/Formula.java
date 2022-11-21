@@ -44,7 +44,26 @@ public class Formula extends JFrame {
 
     public Formula() {
         super("дюк123");
-        setSize(WIDTH, HEIGHT);
+
+        JMenuBar menuBar = new JMenuBar();
+        this.setJMenuBar(menuBar);
+        JMenu fileMenu = new JMenu("Справка");
+        menuBar.add(fileMenu);
+        JButton nextMenu = new JButton("О программе");
+        fileMenu.add(nextMenu);
+
+        ImageIcon img= new ImageIcon("кот.png");
+        nextMenu.addActionListener(new ActionListener() {
+         @Override
+        public void actionPerformed(ActionEvent e) {
+             JOptionPane.showMessageDialog(Formula.this,
+                     "Уласовец Ксения Игоревна 2 курс 8группа",
+                     "Информация", JOptionPane.INFORMATION_MESSAGE, img );
+          }
+   });
+
+
+                setSize(WIDTH, HEIGHT);
         Toolkit kit = Toolkit.getDefaultToolkit();
         setLocation((kit.getScreenSize().width - WIDTH) / 2,// это чтобы экран был по центру, без этого оно будет в
                 (kit.getScreenSize().height - HEIGHT) / 2); // левом верхнем углу
@@ -104,9 +123,12 @@ public class Formula extends JFrame {
                             "Ошибка в формате записи числа с плавающей точкой", "Ошибочный формат числа",
                             JOptionPane.WARNING_MESSAGE);
                 }
+                catch(ArithmeticException exception) {
+                    JOptionPane.showMessageDialog(Formula.this,
+                            "Ошибка в арифметике", "Деление на ноль",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
-
-            ;
         });
         JButton buttonReset = new JButton("Очистить поля");
         buttonReset.addActionListener(new ActionListener() {
