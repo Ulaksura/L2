@@ -1,7 +1,12 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class Formula extends JFrame {
     private static final int WIDTH = 400;
@@ -10,6 +15,7 @@ public class Formula extends JFrame {
     private JTextField textFieldX;
     private JTextField textFieldY;
     private JTextField textFieldZ;
+    private JLabel formulaImageLabel = new JLabel();
 
 
     private JTextField textFieldResult;
@@ -21,10 +27,13 @@ public class Formula extends JFrame {
     private int formulaId = 1;
 
     public double Form1(double x, double y, double z) {
+        drawFormula("https://chart.googleapis.com/chart?cht=tx&chl=sin(ln(y)%2Bsin(pi*y^2))(x^2%20%2B%20sin(z)%2Bexp(cos(z)))^{1/4}");
         return Math.sin(Math.log(y)+Math.sin(3.14*y*y))*Math.pow(x*x+Math.sin(z)+Math.exp(Math.cos(z)),1/4);
     }
 
     public double Form2(double x, double y, double z) {
+        drawFormula("https://chart.googleapis.com/chart?cht=tx&chl=(cos(exp(x))%20%2Bln(1%2By)^2%2B%20sqrt(e^{cos(x)}%20%2B%20sin(pi*z)^2)%2Bsqrt(1/x)%2Bcos(y^2))^{sin(z)}");
+
         return Math.pow(Math.cos(Math.exp(x))+Math.log((1+y)*(1+y))+Math.sqrt(Math.exp(Math.cos(x))+Math.sin(3.14*z)*Math.sin(3.14*z))+
                 Math.sqrt(1/x)+Math.cos(y*y),Math.sin(z));
     }
@@ -57,16 +66,23 @@ public class Formula extends JFrame {
          @Override
         public void actionPerformed(ActionEvent e) {
              JOptionPane.showMessageDialog(Formula.this,
-                     "Уласовец Ксения Игоревна 2 курс 8группа",
+                     "Уласовец Ксения Игоревна 2 курс 8 группа",
                      "Информация", JOptionPane.INFORMATION_MESSAGE, img );
           }
    });
+
+
 
 
                 setSize(WIDTH, HEIGHT);
         Toolkit kit = Toolkit.getDefaultToolkit();
         setLocation((kit.getScreenSize().width - WIDTH) / 2,// это чтобы экран был по центру, без этого оно будет в
                 (kit.getScreenSize().height - HEIGHT) / 2); // левом верхнем углу
+
+
+
+
+
 
         addRadioButton("Формула 1", 1); // добавление радиокнопок под наши формулы
         addRadioButton("Формула 2", 2);
@@ -83,6 +99,13 @@ public class Formula extends JFrame {
         textFieldZ = new JTextField("0", 10);
         textFieldZ.setMaximumSize(textFieldZ.getPreferredSize());
 
+
+
+
+        Box hboxImage = Box.createHorizontalBox();
+        hboxImage.add(formulaImageLabel);
+        hboxImage.add((Box.createVerticalStrut(20)));
+
         Box hboxVariables = Box.createHorizontalBox();
         hboxVariables.add(labelForX);
         hboxVariables.add(Box.createHorizontalStrut(10));
@@ -95,6 +118,14 @@ public class Formula extends JFrame {
         hboxVariables.add(labelForZ);
         hboxVariables.add(Box.createHorizontalStrut(10));
         hboxVariables.add(textFieldZ);
+
+
+
+
+
+
+
+
 
         JLabel labelForResult = new JLabel("Результат:");
         textFieldResult = new JTextField("0", 10);
@@ -113,10 +144,12 @@ public class Formula extends JFrame {
                     Double z = Double.parseDouble(textFieldZ.getText());
                     Double result;
 
-                    if (formulaId == 1)
+                    if (formulaId == 1) {
                         result = Form1(x, y, z);
-                    else
+                    }
+                    else {
                         result = Form2(x, y, z);
+                    }
                     labelForResult.setText(result.toString());
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(Formula.this,
@@ -152,11 +185,32 @@ public class Formula extends JFrame {
 
         Box contentBox = Box.createVerticalBox();
         contentBox.add(Box.createVerticalGlue());
+        contentBox.add(hboxImage);
         contentBox.add(hboxFormulaType);
         contentBox.add(hboxVariables);
         contentBox.add(hboxResult);
         contentBox.add(hboxButtons);
         contentBox.add(Box.createVerticalGlue());
         getContentPane().add(contentBox, BorderLayout.CENTER);
+    }
+
+
+
+    private void drawFormula(String strUrl) {
+        URL url = null;
+        try {
+            url = new URL(strUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(url);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        formulaImageLabel.setIcon(new ImageIcon(image));
     }
 }
