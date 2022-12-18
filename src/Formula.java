@@ -16,7 +16,16 @@ public class Formula extends JFrame {
     private JTextField textFieldY;
     private JTextField textFieldZ;
     private JLabel formulaImageLabel = new JLabel();
+    private JLabel memoryTextLabel = new JLabel("MEM:");
 
+    private JLabel memoryTextLabel1 = new JLabel("0");
+    private JLabel memoryTextLabel2 = new JLabel("0");
+    private JLabel memoryTextLabel3 = new JLabel("0");
+
+
+    private int activeMemoryCell = 0;
+    private double memoryCells[] = new double[3];
+    private JLabel resultLabel = new JLabel();
 
     private JTextField textFieldResult;
 
@@ -71,14 +80,75 @@ public class Formula extends JFrame {
           }
    });
 
-
-
-
                 setSize(WIDTH, HEIGHT);
         Toolkit kit = Toolkit.getDefaultToolkit();
         setLocation((kit.getScreenSize().width - WIDTH) / 2,// это чтобы экран был по центру, без этого оно будет в
                 (kit.getScreenSize().height - HEIGHT) / 2); // левом верхнем углу
 
+
+
+        JRadioButton rbMem1 = new JRadioButton("1");
+        JRadioButton rbMem2 = new JRadioButton("2");
+        JRadioButton rbMem3 = new JRadioButton("3");
+
+        rbMem1.setSelected(true);
+
+        rbMem1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Formula.this.activeMemoryCell = 0;
+            }
+        });
+
+        rbMem2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Formula.this.activeMemoryCell = 1;
+            }
+        });
+
+        rbMem3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Formula.this.activeMemoryCell = 2;
+            }
+        });
+
+        ButtonGroup memButtonGroup = new ButtonGroup();
+        memButtonGroup.add(rbMem1);
+        memButtonGroup.add(rbMem2);
+        memButtonGroup.add(rbMem3);
+
+        JButton buttonMemoryPlus = new JButton("M+");
+        buttonMemoryPlus.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int activeCell = Formula.this.activeMemoryCell;
+                memoryCells[activeCell] += Double.parseDouble(resultLabel.getText());
+                updateMemoryLabels();
+            }
+        });
+
+        JButton buttonMemoryMinus = new JButton("M-");
+        buttonMemoryMinus.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int activeCell = Formula.this.activeMemoryCell;
+                memoryCells[activeCell] -= Double.parseDouble(resultLabel.getText());
+                updateMemoryLabels();
+            }
+        });
+
+        JButton buttonMemoryClear = new JButton("MC");
+        buttonMemoryClear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int activeCell = Formula.this.activeMemoryCell;
+                memoryCells[activeCell] = 0;
+                updateMemoryLabels();
+
+            }
+        });
 
 
 
@@ -89,42 +159,44 @@ public class Formula extends JFrame {
 
         radioButtons.setSelected(radioButtons.getElements().nextElement().getModel(), true);
 
-        JLabel labelForX = new JLabel("X:");
-        textFieldX = new JTextField("0", 10);
+       // JLabel labelForX = new JLabel("X:");
+        textFieldX = new JTextField("0", 6);
         textFieldX.setMaximumSize(textFieldX.getPreferredSize());
-        JLabel labelForY = new JLabel("Y:");
-        textFieldY = new JTextField("0", 10);       // отводим место для полей ввода значений
+     //   JLabel labelForY = new JLabel("Y:");
+        textFieldY = new JTextField("0", 6);       // отводим место для полей ввода значений
         textFieldY.setMaximumSize(textFieldY.getPreferredSize());
-        JLabel labelForZ = new JLabel("Z:");
-        textFieldZ = new JTextField("0", 10);
+      //  JLabel labelForZ = new JLabel("Z:");
+        textFieldZ = new JTextField("0", 6);
         textFieldZ.setMaximumSize(textFieldZ.getPreferredSize());
 
 
-
+        Box hboxMemory = Box.createHorizontalBox();
+        hboxMemory.add(Box.createHorizontalGlue());
+        hboxMemory.add(memoryTextLabel);
+        hboxMemory.add(rbMem1);
+        hboxMemory.add(rbMem2);
+        hboxMemory.add(rbMem3);
+        hboxMemory.add(buttonMemoryPlus);
+        hboxMemory.add(buttonMemoryMinus);
+        hboxMemory.add(buttonMemoryClear);
+        hboxMemory.add(Box.createHorizontalGlue());
 
         Box hboxImage = Box.createHorizontalBox();
         hboxImage.add(formulaImageLabel);
         hboxImage.add((Box.createVerticalStrut(20)));
 
         Box hboxVariables = Box.createHorizontalBox();
-        hboxVariables.add(labelForX);
+      //  hboxVariables.add(labelForX);
         hboxVariables.add(Box.createHorizontalStrut(10));
         hboxVariables.add(textFieldX);
         hboxVariables.add(Box.createHorizontalStrut(40));
-        hboxVariables.add(labelForY);
+      //  hboxVariables.add(labelForY);
         hboxVariables.add(Box.createHorizontalStrut(10));
         hboxVariables.add(textFieldY);
         hboxVariables.add(Box.createHorizontalStrut(40));
-        hboxVariables.add(labelForZ);
+       // hboxVariables.add(labelForZ);
         hboxVariables.add(Box.createHorizontalStrut(10));
         hboxVariables.add(textFieldZ);
-
-
-
-
-
-
-
 
 
         JLabel labelForResult = new JLabel("Результат:");
@@ -151,6 +223,7 @@ public class Formula extends JFrame {
                         result = Form2(x, y, z);
                     }
                     labelForResult.setText(result.toString());
+
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(Formula.this,
                             "Ошибка в формате записи числа с плавающей точкой", "Ошибочный формат числа",
@@ -184,9 +257,10 @@ public class Formula extends JFrame {
 // Связать области воедино в компоновке BoxLayout
 
         Box contentBox = Box.createVerticalBox();
-        contentBox.add(Box.createVerticalGlue());
+        contentBox.add(Box.createVerticalStrut(5));
         contentBox.add(hboxImage);
         contentBox.add(hboxFormulaType);
+        contentBox.add(hboxMemory);
         contentBox.add(hboxVariables);
         contentBox.add(hboxResult);
         contentBox.add(hboxButtons);
@@ -194,7 +268,11 @@ public class Formula extends JFrame {
         getContentPane().add(contentBox, BorderLayout.CENTER);
     }
 
-
+    private void updateMemoryLabels() {
+        memoryTextLabel1.setText(Double.toString(memoryCells[0]));
+        memoryTextLabel2.setText(Double.toString(memoryCells[1]));
+        memoryTextLabel3.setText(Double.toString(memoryCells[2]));
+    }
 
     private void drawFormula(String strUrl) {
         URL url = null;
